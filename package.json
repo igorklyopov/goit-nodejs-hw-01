@@ -25,5 +25,8 @@
   "homepage": "https://github.com/igorklyopov/goit-nodejs-hw-01#readme",
   "devDependencies": {
     "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2"
   }
 }
