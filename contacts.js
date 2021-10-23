@@ -3,7 +3,7 @@ const path = require("path");
 const crypto = require("crypto");
 const chalk = require("chalk");
 
-const contactsPath = path.join(__dirname, "/db/contacts.json");
+const contactsPath = path.join(__dirname, "db", "contacts.json");
 
 async function readContacts() {
   try {
@@ -28,7 +28,9 @@ async function getContactById(contactId) {
   try {
     const contacts = await readContacts();
 
-    const contact = contacts.find(({ id }) => id === contactId);
+    const contact = contacts.find(
+      ({ id }) => id.toString() === contactId.toString()
+    );
 
     if (contact) {
       console.table(contact);
@@ -47,7 +49,18 @@ async function getContactById(contactId) {
 async function removeContact(contactId) {
   try {
     const prevContacts = await readContacts();
-    const newContacts = prevContacts.filter(({ id }) => id !== contactId);
+    const contact = prevContacts.find(
+      ({ id }) => id.toString() === contactId.toString()
+    );
+
+    if (!contact)
+      return console.log(
+        chalk.yellow(`Contact with id: "${contactId}" not found!`)
+      );
+
+    const newContacts = prevContacts.filter(
+      ({ id }) => id.toString() !== contactId.toString()
+    );
 
     await fs.writeFile(contactsPath, JSON.stringify(newContacts, null, 2));
 
@@ -64,6 +77,23 @@ async function addContact(name, email, phone) {
     const prevContacts = await readContacts();
     const newContact = { id: crypto.randomUUID(), name, email, phone };
     const updatedContacts = [...prevContacts, newContact];
+
+    const duplicateContactByName = prevContacts.find(
+      (prevContact) => name.toLowerCase() === prevContact.name.toLowerCase()
+    );
+    const duplicateContactByEmail = prevContacts.find(
+      (prevContact) => email.toLowerCase() === prevContact.email.toLowerCase()
+    );
+    const duplicateContactByPhone = prevContacts.find(
+      (prevContact) => phone.toLowerCase() === prevContact.phone.toLowerCase()
+    );
+
+    if (duplicateContactByName)
+      return console.log(chalk.yellow(`${name} is already in contacts!`));
+    if (duplicateContactByEmail)
+      return console.log(chalk.yellow(`${email} is already in contacts!`));
+    if (duplicateContactByPhone)
+      return console.log(chalk.yellow(`${phone} is already in contacts!`));
 
     await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
 
