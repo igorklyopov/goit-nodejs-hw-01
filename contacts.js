@@ -78,22 +78,15 @@ async function addContact(name, email, phone) {
     const newContact = { id: crypto.randomUUID(), name, email, phone };
     const updatedContacts = [...prevContacts, newContact];
 
-    const duplicateContactByName = prevContacts.find(
-      (prevContact) => name.toLowerCase() === prevContact.name.toLowerCase()
-    );
-    const duplicateContactByEmail = prevContacts.find(
-      (prevContact) => email.toLowerCase() === prevContact.email.toLowerCase()
-    );
-    const duplicateContactByPhone = prevContacts.find(
-      (prevContact) => phone.toLowerCase() === prevContact.phone.toLowerCase()
+    const duplicateContact = prevContacts.find(
+      (prevContact) =>
+        name.toLowerCase() === prevContact.name.toLowerCase() &&
+        email.toLowerCase() === prevContact.email.toLowerCase() &&
+        phone === prevContact.phone
     );
 
-    if (duplicateContactByName)
-      return console.log(chalk.yellow(`${name} is already in contacts!`));
-    if (duplicateContactByEmail)
-      return console.log(chalk.yellow(`${email} is already in contacts!`));
-    if (duplicateContactByPhone)
-      return console.log(chalk.yellow(`${phone} is already in contacts!`));
+    if (duplicateContact)
+      return console.log(chalk.yellow("This entry is already in contacts!"));
 
     await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
 
