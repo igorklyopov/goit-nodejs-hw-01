@@ -1,13 +1,13 @@
-const fs = require("fs/promises");
-const path = require("path");
-const crypto = require("crypto");
-const chalk = require("chalk");
+const fs = require('fs/promises');
+const path = require('path');
+const crypto = require('crypto');
+const chalk = require('chalk');
 
-const contactsPath = path.join(__dirname, "db", "contacts.json");
+const contactsPath = path.join(__dirname, 'db', 'contacts.json');
 
 async function readContacts() {
   try {
-    const contactsData = await fs.readFile(contactsPath, "utf8");
+    const contactsData = await fs.readFile(contactsPath, 'utf8');
     return JSON.parse(contactsData);
   } catch (error) {
     return console.error(chalk.red(error.message));
@@ -37,7 +37,7 @@ async function getContactById(contactId) {
 
       return contact;
     } else {
-      console.log(chalk.yellow("Contact not found!"));
+      console.log(chalk.yellow('Contact not found!'));
 
       return;
     }
@@ -64,7 +64,7 @@ async function removeContact(contactId) {
 
     await fs.writeFile(contactsPath, JSON.stringify(newContacts, null, 2));
 
-    console.log(chalk.greenBright("Contact is removed from the contact list!"));
+    console.log(chalk.greenBright('Contact is removed from the contact list!'));
 
     return newContacts;
   } catch (error) {
@@ -77,16 +77,6 @@ async function addContact(name, email, phone) {
     const prevContacts = await readContacts();
     const newContact = { id: crypto.randomUUID(), name, email, phone };
     const updatedContacts = [...prevContacts, newContact];
-
-    const duplicateContact = prevContacts.find(
-      (prevContact) =>
-        name.toLowerCase() === prevContact.name.toLowerCase() &&
-        email.toLowerCase() === prevContact.email.toLowerCase() &&
-        phone === prevContact.phone
-    );
-
-    if (duplicateContact)
-      return console.log(chalk.yellow("This entry is already in contacts!"));
 
     await fs.writeFile(contactsPath, JSON.stringify(updatedContacts, null, 2));
 
